@@ -37,6 +37,17 @@ def saveToCsv(results, fileName,parent):
     xlsxFileName = './results/'+parent+'/excel/'+fileName+'.xlsx'
     csvFile.to_excel(xlsxFileName, index=None, header=True)
 
+def createTxtLog(path,log):
+    folderList = path.split("/")
+    parent = ""
+    for folder in folderList:
+        parent += folder+"/"
+        if not os.path.exists('./'+parent):
+            os.makedirs('./'+parent)
+    txtFileName = './'+parent+'.txt'
+    with open(txtFileName, 'w', newline='') as txtfile:
+        txtfile.write(log)
+
 def getDataDoc(path):
     data = []
     tps = ""
@@ -112,12 +123,19 @@ def extractData(path,no,dpt):
                                 newDPT["rt"] = str(row[7])
                                 newDPT["rw"] = str(row[8])
                         except Exception:
-                            newDPT["ket"] = row[5]
-                            splitRtRw = row[5].split("\n")
-                            # get last and second last
-                            if len(splitRtRw) > 2:
-                                newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
-                                newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                            if len(row) > 5:
+                                newDPT["ket"] = row[5]
+                                splitRtRw = row[5].split("\n")
+                                # get last and second last
+                                if len(splitRtRw) > 2:
+                                    newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
+                                    newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                                else:
+                                    print("Data RT RW not found ",row)
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                            else:
+                                print("Data RT RW not found ",row)
+                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                     else:
                         newDPT["jenis_kelamin"] = row[2]
                         newDPT["usia"] = row[3]
@@ -132,12 +150,19 @@ def extractData(path,no,dpt):
                                 newDPT["rt"] = str(row[7])
                                 newDPT["rw"] = str(row[8])
                         except Exception:
-                            newDPT["ket"] = row[4]
-                            splitRtRw = row[4].split("\n")
-                            # get last and second last
-                            if len(splitRtRw) > 2:
-                                newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
-                                newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                            if len(row) > 4:
+                                newDPT["ket"] = row[4]
+                                splitRtRw = row[4].split("\n")
+                                # get last and second last
+                                if len(splitRtRw) > 2:
+                                    newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
+                                    newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                                else:
+                                    print("Data RT RW not found ",row)
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                            else:
+                                print("Data RT RW not found ",row)
+                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
 
                     ok = True
                 if ok:
