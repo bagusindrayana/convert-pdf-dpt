@@ -14,8 +14,14 @@ if not os.path.exists(pdfSourceDir):
 def saveToCsv(results, fileName,parent):
     if not os.path.exists('./results'):
         os.makedirs('./results')
-    if not os.path.exists('./results/'+parent):
-        os.makedirs('./results/'+parent)
+    # if parent contains / then create folder
+    folderList = parent.split("/")
+    parent = ""
+    for folder in folderList:
+        parent += folder+"/"
+        if not os.path.exists('./results/'+parent):
+            os.makedirs('./results/'+parent)
+    
     if not os.path.exists('./results/'+parent+'/csv'):
         os.makedirs('./results/'+parent+'/csv')
     if not os.path.exists('./results/'+parent+'/excel'):
@@ -148,7 +154,7 @@ def extractData(path,no,dpt):
 
     if len(results) > 0:
         print(len(results),filename)
-        saveToCsv(results, str(firstNo) +"_"+str((no-1))+ "_"+ filename,dpt["kabupaten_kota"])
+        saveToCsv(results, str(firstNo) +"_"+str((no-1))+ "_"+ filename,dpt["provinsi"]+"/"+dpt["kabupaten_kota"])
     return {
         "no":no,
         "results":results,
