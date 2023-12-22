@@ -96,6 +96,7 @@ def extractData(path,no,dpt):
     firstNo = no
     dataDoc = getDataDoc(path)
     tables=camelot.read_pdf(path,flavor='stream',pages='all')
+    haveError = False
     try:
         for table in tables:
             page = table.parsing_report['page']
@@ -112,7 +113,12 @@ def extractData(path,no,dpt):
                 if row[1].strip() != "2" and row[1].strip() != "" and row[1].strip() != "NAMA" and row[1].strip() != "KABUPATEN/KOTA"  and row[1].strip() != 2 and row[2].strip() != "JENIS" and row[3].strip() != "JENIS" and row[3].strip() != "":
                     newDPT = dpt.copy()
                     newDPT["no"] = no
-                    newDPT["nama"] = row[1]
+                    newDPT["nama"] = row[1].replace("/"," atau ")
+                    if row[2].strip() == "L" or row[2].strip() == "P":
+                        newDPT["jenis_kelamin"] = row[2]
+                    if len(str(row[3])) == 2:
+                        newDPT["usia"] = row[3]
+                    ok = True
                     try:
                         if row[1].strip().folderKelurahan.find("\nL") != -1 or row[1].strip().folderKelurahan.find("\nP") != -1:
                             splitRow1 = row[1].split("\n")
@@ -128,6 +134,7 @@ def extractData(path,no,dpt):
                                     newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
                                 else:
                                     print("Data RT RW not found ",row)
+                                    haveError = True
                                     createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                             else:
                                 print("Data RT RW not found ",row)
@@ -156,10 +163,12 @@ def extractData(path,no,dpt):
                                         newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
                                     else:
                                         print("Data RT RW not found ",row)
-                                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                        haveError = True
+                                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                                 else:
                                     print("Data RT RW not found ",row)
-                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                    haveError = True
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                         else:
                             newDPT["jenis_kelamin"] = row[2]
                             newDPT["usia"] = row[3]
@@ -183,18 +192,21 @@ def extractData(path,no,dpt):
                                         newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
                                     else:
                                         print("Data RT RW not found ",row[1])
+                                        haveError = True
                                         createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                                 else:
                                     print("Data RT RW not found ",row[1])
+                                    haveError = True
                                     createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
-                        ok = True
+                        
                     except Exception:
                         print("ERROR",row)
+                        haveError = True
                         createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
                     
                 if ok:
                     if(checkDouble(newDPT,results)):
-                        newDPT["ket"] = no
+                        newDPT["ket"] =  str(newDPT["ket"])+str(no)
                     results.append(newDPT)
                     no += 1
     except Exception as e:
@@ -210,6 +222,9 @@ def extractData(path,no,dpt):
         if not os.path.exists('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error"):
             os.makedirs('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error")
         # copy file tp to error folder
+        os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
+
+    if haveError:
         os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
 
     if len(results) > 0:
