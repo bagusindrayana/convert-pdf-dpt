@@ -4,6 +4,7 @@ import pandas as pd
 import traceback
 import sys
 import pdfquery
+import shutil
 
 
 pdfSourceDir = './pdf-sources'
@@ -122,7 +123,7 @@ def extractData(path,no,dpt):
                     try:
                         if row[1].strip().find("\nL") != -1 or row[1].strip().find("\nP") != -1:
                             splitRow1 = row[1].split("\n")
-                            newDPT["nama"] = splitRow1[0]
+                            newDPT["nama"] = splitRow1[0].replace("/"," atau ")
                             newDPT["jenis_kelamin"] = splitRow1[1]
                             newDPT["usia"] = row[2]
                             if len(row) > 3:
@@ -135,11 +136,11 @@ def extractData(path,no,dpt):
                                 else:
                                     print("Data RT RW not found ",row)
                                     haveError = True
-                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                             else:
                                 print("Data RT RW not found ",row)
                                 haveError = True
-                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                         elif row[3].strip() == "L" or row[3].strip() == "P":
                             newDPT["jenis_kelamin"] = row[3]
                             newDPT["usia"] = row[4]
@@ -194,11 +195,11 @@ def extractData(path,no,dpt):
                                     else:
                                         print("Data RT RW not found ",row[1])
                                         haveError = True
-                                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                                 else:
                                     print("Data RT RW not found ",row[1])
                                     haveError = True
-                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                         
                     except Exception as e:
                         print(e,filename)
@@ -206,7 +207,7 @@ def extractData(path,no,dpt):
                         # or
                         print(sys.exc_info()[2])
                         haveError = True
-                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
+                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
                     
                 if ok:
                     if(checkDouble(newDPT,results)):
@@ -226,10 +227,12 @@ def extractData(path,no,dpt):
         if not os.path.exists('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error"):
             os.makedirs('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error")
         # copy file tp to error folder
-        os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
+        # os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
+        shutil.copy(path, './results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
 
     if haveError:
-        os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
+        # os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
+        shutil.copy(path, './results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
 
     if len(results) > 0:
         print(len(results),filename)
