@@ -148,9 +148,15 @@ def extractData(path,no,dpt):
         print(traceback.format_exc())
         # or
         print(sys.exc_info()[2])
-        
+        # check if error folder not exist
+        if not os.path.exists('./results/'+dpt["provinsi"]):
+            os.makedirs('./results/'+dpt["provinsi"])
+        if not os.path.exists('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]):
+            os.makedirs('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"])
+        if not os.path.exists('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error"):
+            os.makedirs('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error")
         # copy file tp to error folder
-        os.system("cp '"+path+"' './results/error-"+dpt["kabupaten_kota"]+"/"+filename+"'")
+        os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
 
     if len(results) > 0:
         print(len(results),filename)
