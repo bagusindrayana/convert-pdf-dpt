@@ -120,7 +120,7 @@ def extractData(path,no,dpt):
                         newDPT["usia"] = row[3]
                     ok = True
                     try:
-                        if row[1].strip().folderKelurahan.find("\nL") != -1 or row[1].strip().folderKelurahan.find("\nP") != -1:
+                        if row[1].strip().find("\nL") != -1 or row[1].strip().find("\nP") != -1:
                             splitRow1 = row[1].split("\n")
                             newDPT["nama"] = splitRow1[0]
                             newDPT["jenis_kelamin"] = splitRow1[1]
@@ -199,8 +199,11 @@ def extractData(path,no,dpt):
                                     haveError = True
                                     createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                         
-                    except Exception:
-                        print("ERROR",row)
+                    except Exception as e:
+                        print(e,filename)
+                        print(traceback.format_exc())
+                        # or
+                        print(sys.exc_info()[2])
                         haveError = True
                         createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
                     
