@@ -138,6 +138,7 @@ def extractData(path,no,dpt):
                                     createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                             else:
                                 print("Data RT RW not found ",row)
+                                haveError = True
                                 createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                         elif row[3].strip() == "L" or row[3].strip() == "P":
                             newDPT["jenis_kelamin"] = row[3]
