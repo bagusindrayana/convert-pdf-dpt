@@ -195,7 +195,7 @@ for folderProvinsi in folderList:
         kabupatenKota = folderKabKota.replace("SALINAN DPT","").replace("_"," ").strip()
         dpt["kabupaten_kota"] = kabupatenKota
         
-        no = deepSearch("./pdf-sources/"+folderKabKota,no,dpt)
+        no = deepSearch("./pdf-sources/"+folderProvinsi+"/"+folderKabKota,no,dpt)
         print("Done "+kabupatenKota)
     print("Done "+folderProvinsi)
        
