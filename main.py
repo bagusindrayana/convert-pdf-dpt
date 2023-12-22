@@ -37,14 +37,14 @@ def saveToCsv(results, fileName,parent):
     xlsxFileName = './results/'+parent+'/excel/'+fileName+'.xlsx'
     csvFile.to_excel(xlsxFileName, index=None, header=True)
 
-def createTxtLog(path,log):
+def createTxtLog(path,fileName,log):
     folderList = path.split("/")
     parent = ""
     for folder in folderList:
         parent += folder+"/"
         if not os.path.exists('./'+parent):
             os.makedirs('./'+parent)
-    txtFileName = './'+parent+'.txt'
+    txtFileName = './'+parent+'/'+fileName+'.txt'
     with open(txtFileName, 'w', newline='') as txtfile:
         txtfile.write(log)
 
@@ -132,10 +132,10 @@ def extractData(path,no,dpt):
                                     newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
                                 else:
                                     print("Data RT RW not found ",row)
-                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                             else:
                                 print("Data RT RW not found ",row)
-                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                     else:
                         newDPT["jenis_kelamin"] = row[2]
                         newDPT["usia"] = row[3]
@@ -159,10 +159,10 @@ def extractData(path,no,dpt):
                                     newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
                                 else:
                                     print("Data RT RW not found ",row)
-                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                             else:
                                 print("Data RT RW not found ",row)
-                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
 
                     ok = True
                 if ok:
