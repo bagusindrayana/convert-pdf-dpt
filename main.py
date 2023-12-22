@@ -44,7 +44,7 @@ def createTxtLog(path,fileName,log):
         parent += folder+"/"
         if not os.path.exists('./'+parent):
             os.makedirs('./'+parent)
-    txtFileName = './'+parent+'/'+fileName+'.txt'
+    txtFileName = parent+fileName+'.txt'
     with open(txtFileName, 'w', newline='') as txtfile:
         txtfile.write(log)
 
@@ -84,6 +84,12 @@ def getDataDoc(path):
             print(e)
     return data
 
+def checkDouble(dpt,results):
+    for result in results:
+        if result["nama"] == dpt["nama"] and result["jenis_kelamin"] == dpt["jenis_kelamin"] and result["usia"] == dpt["usia"] and result["rt"] == dpt["rt"] and result["rw"] == dpt["rw"] and result["nomor_tps"] == dpt["nomor_tps"] and result["kelurahan_desa"] == dpt["kelurahan_desa"]:
+            return True
+    return False
+
 def extractData(path,no,dpt):
     filename = path[path.rfind("/")+1:]
     results = []
@@ -106,26 +112,16 @@ def extractData(path,no,dpt):
                 if row[1].strip() != "2" and row[1].strip() != "" and row[1].strip() != "NAMA" and row[1].strip() != "KABUPATEN/KOTA"  and row[1].strip() != 2 and row[2].strip() != "JENIS" and row[3].strip() != "JENIS" and row[3].strip() != "":
                     newDPT = dpt.copy()
                     newDPT["no"] = no
-                    newDPT["ket"] = no
                     newDPT["nama"] = row[1]
-                    if row[3].strip() == "L" or row[3].strip() == "P":
-                        newDPT["jenis_kelamin"] = row[3]
-                        newDPT["usia"] = row[4]
-
-                        try:
-                            if len(str(row[5])) == 3:
-                                newDPT["rt"] = str(row[5])
-                                newDPT["rw"] = str(row[6])
-                            elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
-                                newDPT["rt"] = str(row[6])
-                                newDPT["rw"] = str(row[7])
-                            elif len(str(row[8])) == 3:
-                                newDPT["rt"] = str(row[7])
-                                newDPT["rw"] = str(row[8])
-                        except Exception:
-                            if len(row) > 5:
-                                newDPT["ket"] = row[5]
-                                splitRtRw = row[5].split("\n")
+                    try:
+                        if row[1].strip().folderKelurahan.find("\nL") != -1 or row[1].strip().folderKelurahan.find("\nP") != -1:
+                            splitRow1 = row[1].split("\n")
+                            newDPT["nama"] = splitRow1[0]
+                            newDPT["jenis_kelamin"] = splitRow1[1]
+                            newDPT["usia"] = row[2]
+                            if len(row) > 3:
+                                newDPT["ket"] = row[3]
+                                splitRtRw = row[3].split("\n")
                                 # get last and second last
                                 if len(splitRtRw) > 2:
                                     newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
@@ -136,36 +132,69 @@ def extractData(path,no,dpt):
                             else:
                                 print("Data RT RW not found ",row)
                                 createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
-                    else:
-                        newDPT["jenis_kelamin"] = row[2]
-                        newDPT["usia"] = row[3]
-                        try:
-                            if len(str(row[5])) == 3:
-                                newDPT["rt"] = str(row[5])
-                                newDPT["rw"] = str(row[6])
-                            elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
-                                newDPT["rt"] = str(row[6])
-                                newDPT["rw"] = str(row[7])
-                            elif len(str(row[8])) == 3:
-                                newDPT["rt"] = str(row[7])
-                                newDPT["rw"] = str(row[8])
-                        except Exception:
-                            if len(row) > 4:
-                                newDPT["ket"] = row[4]
-                                splitRtRw = row[4].split("\n")
-                                # get last and second last
-                                if len(splitRtRw) > 2:
-                                    newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
-                                    newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                        elif row[3].strip() == "L" or row[3].strip() == "P":
+                            newDPT["jenis_kelamin"] = row[3]
+                            newDPT["usia"] = row[4]
+
+                            try:
+                                if len(str(row[5])) == 3:
+                                    newDPT["rt"] = str(row[5])
+                                    newDPT["rw"] = str(row[6])
+                                elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
+                                    newDPT["rt"] = str(row[6])
+                                    newDPT["rw"] = str(row[7])
+                                elif len(str(row[8])) == 3:
+                                    newDPT["rt"] = str(row[7])
+                                    newDPT["rw"] = str(row[8])
+                            except Exception:
+                                if len(row) > 5:
+                                    newDPT["ket"] = row[5]
+                                    splitRtRw = row[5].split("\n")
+                                    # get last and second last
+                                    if len(splitRtRw) > 2:
+                                        newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
+                                        newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                                    else:
+                                        print("Data RT RW not found ",row)
+                                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
                                 else:
                                     print("Data RT RW not found ",row)
-                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
-                            else:
-                                print("Data RT RW not found ",row)
-                                createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
-
-                    ok = True
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                        else:
+                            newDPT["jenis_kelamin"] = row[2]
+                            newDPT["usia"] = row[3]
+                            try:
+                                if len(str(row[5])) == 3:
+                                    newDPT["rt"] = str(row[5])
+                                    newDPT["rw"] = str(row[6])
+                                elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
+                                    newDPT["rt"] = str(row[6])
+                                    newDPT["rw"] = str(row[7])
+                                elif len(str(row[8])) == 3:
+                                    newDPT["rt"] = str(row[7])
+                                    newDPT["rw"] = str(row[8])
+                            except Exception:
+                                if len(row) > 4:
+                                    newDPT["ket"] = row[4]
+                                    splitRtRw = row[4].split("\n")
+                                    # get last and second last
+                                    if len(splitRtRw) > 2:
+                                        newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
+                                        newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                                    else:
+                                        print("Data RT RW not found ",row[1])
+                                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                                else:
+                                    print("Data RT RW not found ",row[1])
+                                    createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                        ok = True
+                    except Exception:
+                        print("ERROR",row)
+                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(row[1])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
+                    
                 if ok:
+                    if(checkDouble(newDPT,results)):
+                        newDPT["ket"] = no
                     results.append(newDPT)
                     no += 1
     except Exception as e:
