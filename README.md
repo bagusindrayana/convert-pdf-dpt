@@ -9,7 +9,7 @@
     │   ├───FOLDER NAMA KABUPATEN
     │   │   ├───LIST FILE PDF (Tidak masalah jika ada sub folder lain semacam kecamatan,kelurahan,tps)
 ```
-- jalankan `python main.py` dan tunggu hingga selesai
+- jalankan `python main.py` (proses offline) atau `python main_ilovepdf.py` jika ingin menggunakan layanan ilovepdf (secara online), dan tunggu hingga selesai
 - hasil convert berupa csv dan excel akan tersimpan di folder `results/`
 
 ## Gagal Convert
