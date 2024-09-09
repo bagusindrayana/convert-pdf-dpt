@@ -58,7 +58,7 @@ def saveToCsv(results, fileName,parent):
         os.makedirs('./results/'+parent+'/excel')
     csvFileName = './results/'+parent+'/csv/'+fileName+'.csv'
     with open(csvFileName, 'w', newline='') as csvfile:
-        fieldnames = ['no', 'nama', 'jenis_kelamin', 'usia', 'rt', 'rw', 'nik', 'ket', 'nomor_tps', 'kelurahan_desa', 'kecamatan', 'kabupaten_kota', 'provinsi']
+        fieldnames = ['no', 'nama', 'jenis_kelamin', 'usia', 'rt', 'rw', 'nik', 'ket','alamat', 'nomor_tps', 'kelurahan_desa', 'kecamatan', 'kabupaten_kota', 'provinsi']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for result in results:
@@ -175,21 +175,27 @@ def extractData(path,no,dpt):
                     read = True
                 elif "Rekapitulasi" in value:
                     read = False
-                elif read and value != "JENIS KELAMIN":
+                elif read and value != "JENIS KELAMIN" and value != "2":
                     data.append(col[row].value)
                 elif len(value.split(":")) == 4:
-                    tps = value.split(":")[3]
+                    valueSplit = value.split(":")
+                    tps = valueSplit[3]
+                    dpt['kelurahan_desa'] = valueSplit[2].strip()
+                    dpt['kecamatan'] = valueSplit[1].strip()
 
 
-        if read and len(data) == 7:
+        if read and len(data) >= 7:
             newDPT = dpt.copy()
             newDPT['no'] = no
             newDPT['nomor_tps'] =  tps
             newDPT['nama'] = data[1]
             newDPT['jenis_kelamin'] = data[2]
             newDPT['usia'] = data[3]
+            newDPT['alamat'] = data[4]
             newDPT['rw'] = data[5]
             newDPT['rt'] = data[6]
+            if len(data) > 7:
+                newDPT['ket'] = data[7]
             results.append(newDPT)
             no += 1
     if len(results) > 0:
@@ -206,7 +212,6 @@ def deepSearch(path,no,dpt):
         if(os.path.isfile(path+"/"+file)):
             print(file)
             extraxted = extractData(path+"/"+file,no,dpt)
-            print(extraxted['results'])
             no = extraxted["no"]
         else:
             no = deepSearch(path+"/"+file,no,dpt)
@@ -233,6 +238,7 @@ for folderProvinsi in folderList:
         "rw":"",
         "nik":"-",
         "ket":"-",
+        "alamat":"-",
         "nomor_tps":1,
         "kelurahan_desa":"KELURAHAN",
         "kecamatan":"KECAMATAN",
