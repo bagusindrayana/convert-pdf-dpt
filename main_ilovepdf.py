@@ -173,9 +173,10 @@ def extractData(path,no,dpt):
                 value = str(col[row].value).strip()
                 if value == "NAMA":
                     read = True
+                    break
                 elif "Rekapitulasi" in value:
                     read = False
-                elif read and value != "JENIS KELAMIN" and value != "2":
+                elif read and value not in "1 2 3 4 5 6 7 8 9":
                     data.append(col[row].value)
                 elif len(value.split(":")) == 4:
                     valueSplit = value.split(":")
