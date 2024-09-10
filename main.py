@@ -52,6 +52,12 @@ def saveToCsv(results, fileName,parent):
     xlsxFileName = resultsDir+'/'+parent+'/excel/'+fileName+'.xlsx'
     csvFile.to_excel(xlsxFileName, index=None, header=True)
 
+def padding_zero(no,length):
+    noStr = str(no)
+    while len(noStr) < length:
+        noStr = "0"+noStr
+    return noStr
+
 def createTxtLog(path,fileName,log):
     folderList = path.split("/")
     parent = ""
@@ -190,6 +196,7 @@ def extractData(path,no,dpt):
                                 if len(row) > 4 and len(str(row[4]).strip()) > 8:
                                     newDPT["alamat"] = row[4]
                                     print(row[4])
+                                    print("RT : "+newDPT["rt"],"RW : "+newDPT["rw"])
                                     splitRtRw = row[4].split("\n")
                                     # get last and second last
                                     if len(splitRtRw) > 2:
@@ -199,6 +206,7 @@ def extractData(path,no,dpt):
                                         newDPT["rt"] = str(splitRtRw[0])
                                         newDPT["rw"] = str(splitRtRw[1])
                                     
+                                    
    
                     except Exception as e:
                         print(filename,row)
@@ -207,51 +215,58 @@ def extractData(path,no,dpt):
                         # or
                         print(sys.exc_info()[2])
                         haveError = True
+                        ok = False
                         createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
-                    if newDPT['rt'] == "" and newDPT['rw'] == "":
-                        if len(row) > 4:
-                            print(row[4],len(str(row[4])))
-                            if len(str(row[4])) == 7:
-                                newDPT["ket"] = row[3]
-                                splitRtRw = row[4].split("\n")
-                                if len(splitRtRw) > 1:
-                                    newDPT["rt"] = str(splitRtRw[0])
-                                    newDPT["rw"] = str(splitRtRw[1])
-                            elif len(str(row[6])) > 8:
-                                print(row[6])
-                                newDPT["alamat"] = row[6]
-                                if row[6][-3:].isdigit():
-                                    # get the last 3 digit
-                                    newDPT["rt"] = str(row[6][-3:])
-                                newDPT["rw"] = str(row[7])
-                            elif len(str(row[5])) > 8:
-                                print(row[5])
-                                newDPT["alamat"] = row[5]
-                                splitRow = row[5].split(" ")
-                                if len(splitRow) > 1 and str(splitRow[len(splitRow)-2]).strip().replace(".","")[0].isdigit() and str(splitRow[len(splitRow)-1]).strip().replace(".","")[0].isdigit():
-                                    newDPT["rt"] = str(splitRow[0])
-                                    newDPT["rw"] = str(splitRow[1])
-                            elif len(str(row[4])) > 8:
-                                newDPT["alamat"] = row[4]
-                                print(row[4])
-                                if row[4][-3:].isdigit():
-                                    # get the last 3 digit
-                                    newDPT["rt"] = str(row[4][-3:])
-                                    newDPT["rw"] = str(row[6])
-                        if newDPT['rt'] == "":
-                            newDPT["rt"] = oldRT
-                        if newDPT['rw'] == "":
-                            newDPT["rw"] = oldRW
+                    # if newDPT['rt'] == "" and newDPT['rw'] == "":
+                    #     if len(row) > 4:
+                    #         print(row[4],len(str(row[4])))
+                    #         if len(str(row[4])) == 7:
+                    #             newDPT["ket"] = row[3]
+                    #             splitRtRw = row[4].split("\n")
+                    #             if len(splitRtRw) > 1:
+                    #                 newDPT["rt"] = str(splitRtRw[0])
+                    #                 newDPT["rw"] = str(splitRtRw[1])
+                    #         elif len(str(row[6])) > 8:
+                    #             print(1,row[6])
+                    #             newDPT["alamat"] = row[6]
+                    #             if row[6][-3:].isdigit():
+                    #                 # get the last 3 digit
+                    #                 newDPT["rt"] = str(row[6][-3:])
+                    #             newDPT["rw"] = str(row[7])
+                    #         elif len(str(row[5])) > 8:
+                    #             print(2,row[5])
+                    #             newDPT["alamat"] = row[5]
+                    #             splitRow = row[5].split(" ")
+                    #             if len(splitRow) > 1 and str(splitRow[len(splitRow)-2]).strip().replace(".","")[0].isdigit() and str(splitRow[len(splitRow)-1]).strip().replace(".","")[0].isdigit():
+                    #                 newDPT["rt"] = str(splitRow[0])
+                    #                 newDPT["rw"] = str(splitRow[1])
+                    #         elif len(str(row[4])) > 8:
+                    #             newDPT["alamat"] = row[4]
+                    #             print(3,row[4])
+                    #             if row[4][-3:].isdigit():
+                    #                 # get the last 3 digit
+                    #                 newDPT["rt"] = str(row[4][-3:])
+                    #                 newDPT["rw"] = str(row[6])
+                    #     if newDPT['rt'] == "":
+                    #         newDPT["rt"] = oldRT
+                    #     if newDPT['rw'] == "":
+                    #         newDPT["rw"] = oldRW
 
-                        if newDPT['rt'] == "" and newDPT['rw'] == "":
-                            print("Data RT RW not found ",row)
-                            haveError = True
-                            ok = False
-                            createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
-                        else:
-                            oldRT = newDPT['rt']
-                            oldRW = newDPT['rw']
+                    if newDPT['rt'] == "" or newDPT['rw'] == "":
+                        print("Data RT RW not found ",row)
+                        haveError = True
+                        ok = False
+                        createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                
+                    if newDPT['nomor_tps'] == "" or newDPT['nomor_tps'] == "0" or newDPT['nomor_tps'] == 0:
+                        print("TPS not found ",row)
+                        haveError = True
+                        ok = False
+                        createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"TPS not found : "+str(row[0])+","+str(row[1]))
+              
                 if ok:
+                    newDPT['rt'] = padding_zero(newDPT['rt'],3)
+                    newDPT['rw'] = padding_zero(newDPT['rw'],3)
                     if(checkDouble(newDPT,results)):
                         newDPT["ket"] =  str(newDPT["ket"])+str(no)
                     results.append(newDPT)
@@ -283,8 +298,11 @@ def extractData(path,no,dpt):
         if deleteOriginal and haveError == False:
             print("Try Delete "+path)
             if os.path.exists(path):
-                print("success Delete "+path)
-                os.remove(path)
+                try:
+                    print("success Delete "+path)
+                    os.remove(path)
+                except Exception as e:
+                    print(e)
     return {
         "no":no,
         "results":results,

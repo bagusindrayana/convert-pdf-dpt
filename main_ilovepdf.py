@@ -185,6 +185,12 @@ def convert_excel(file_path):
             'success': False,
             'data': json_process,
         }
+    
+def notNone(arrValue):
+    for val in arrValue:
+        if val == None:
+            return False
+    return True
 
 def extractData(path,no,dpt):
     filename = path[path.rfind("/")+1:]
@@ -200,7 +206,7 @@ def extractData(path,no,dpt):
         response = convert_excel(path)
         workbook = openpyxl.load_workbook(response['data']['download_path']+"/"+response['data']['file_name'])
         worksheets = workbook.worksheets
-        
+        nomor_tps = 0
         for worksheet in worksheets:
             for row in worksheet.iter_rows(1, worksheet.max_row):
                 data = {
@@ -221,9 +227,31 @@ def extractData(path,no,dpt):
                 }
                 cels = []
                 for cell in row:
+                  
+                    valueSplit = str(cell.value).strip().split(":")
+                    if len(valueSplit) == 4 and int(valueSplit[3]) != 0:
+                        dpt["nomor_tps"] = valueSplit[3]
+                        nomor_tps = valueSplit[3]
+                        dpt['kelurahan_desa'] = valueSplit[2].strip()
+                        dpt['kecamatan'] = valueSplit[1].strip()
                     cels.append(cell.value)
-                if len(cels) > 7:
-                    if cels[0] != None and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
+                # if cels[len(row)-3] != None and "KECAMATAN" in str(cels[len(row)-6]) and "KELURAHAN TPS" in str(cels[len(row)-6]):
+                #     valueSplit = str(cels[len(row)-3]).strip().split(":")
+                #     dpt["nomor_tps"] = valueSplit[3]
+                #     nomor_tps = valueSplit[3]
+                #     dpt['kelurahan_desa'] = valueSplit[2].strip()
+                #     dpt['kecamatan'] = valueSplit[1].strip()
+                if len(cels) >= 11:
+                    if notNone([
+                        cels[0],
+                        cels[1],
+                        cels[3],
+                        cels[4],
+                        cels[5],
+                        cels[7],
+                        cels[8],
+                    ]) and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
+                        
                         data['no'] = no
                         data['nama'] = cels[1]
                         data['jenis_kelamin'] = cels[3]
@@ -231,26 +259,60 @@ def extractData(path,no,dpt):
                         data['alamat'] = cels[5]
                         data['rt'] = cels[7]
                         data['rw'] = cels[8]
-                        data['ket'] = cels[9]
-                    elif cels[len(row)-3] != None and "KECAMATAN" in str(cels[len(row)-6]) and "KELURAHAN TPS" in str(cels[len(row)-6]):
-                        valueSplit = str(cels[len(row)-1]).strip().split(":")
-                        dpt["nomor_tps"] = valueSplit[3]
-                        dpt['kelurahan_desa'] = valueSplit[2].strip()
-                        dpt['kecamatan'] = valueSplit[1].strip()
+                        if cels[9] != None:
+                            data['ket'] = cels[9]
+                           
+                elif len(cels) >= 9:
+                    if notNone([
+                        cels[0],
+                        cels[1],
+                        cels[2],
+                        cels[3],
+                        cels[4],
+                        cels[5],
+                        cels[6],
+                    ]) and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
+                        data['no'] = no
+                        data['nama'] = cels[1]
+                        data['jenis_kelamin'] = cels[2]
+                        data['usia'] = cels[3]
+                        data['alamat'] = cels[4]
+                        data['rt'] = cels[5]
+                        data['rw'] = cels[6]
+                        if cels[7] != None:
+                            data['ket'] = cels[7]
+                            
+                elif len(cels) >= 7:
+                    print(cels)
 
-                    if data['nama'] != None and data['nama'] != "":
-                        newDPT = dpt.copy()
-                        newDPT['no'] = no
-                        newDPT['nomor_tps'] =  data["nomor_tps"]
-                        newDPT['nama'] = data["nama"]
-                        newDPT['jenis_kelamin'] = data["jenis_kelamin"]
-                        newDPT['usia'] = data["usia"]
-                        newDPT['alamat'] = str(data["alamat"]).strip()
-                        newDPT['rt'] =  padding_zero(data["rt"],3)
-                        newDPT['rw'] = padding_zero(data["rw"],3)
-                        newDPT['ket'] =  data["ket"]
+                if data['nama'] != None and data['nama'] != "":
+                    newDPT = dpt.copy()
+                    newDPT['no'] = no
+                    newDPT['nomor_tps'] =  nomor_tps
+                    newDPT['nama'] = data["nama"]
+                    newDPT['jenis_kelamin'] = data["jenis_kelamin"]
+                    newDPT['usia'] = data["usia"]
+                    newDPT['alamat'] = str(data["alamat"]).strip()
+                    newDPT['rt'] =  data['rt']
+                    newDPT['rw'] = data['rw']
+                    newDPT['ket'] =  data["ket"]
+
+                    if newDPT['rt'] == "0" or newDPT['rw'] == "0" or newDPT['rt'] == "" or newDPT['rw'] == "" or newDPT['rw'] == "None" or newDPT['rt'] == "None" or newDPT['rw'] == None or newDPT['rt'] == None:
+                        print("Data RT RW not found ",cels)
+                        haveError = True
+                        createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                
+                    if newDPT['nomor_tps'] == "" or newDPT['nomor_tps'] == "0" or newDPT['nomor_tps'] == 0:
+                        print("TPS not found ",cels)
+                        haveError = True
+                        createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"TPS not found : "+str(row[0])+","+str(row[1]))
+                    
+                    if haveError == False:
+                        newDPT['rt'] = padding_zero(newDPT["rt"],3)
+                        newDPT['rw'] = padding_zero(newDPT["rw"],3)
                         results.append(newDPT)
                         no += 1
+                            
 
             
     except Exception as e:
@@ -278,6 +340,8 @@ def extractData(path,no,dpt):
             if os.path.exists(path):
                 print("success Delete "+path)
                 os.remove(path)
+    else:
+        print("NO DATA "+filename)
     return {
         "no":no,
         "results":results,
@@ -314,7 +378,7 @@ for folderProvinsi in folderList:
         "nik":"-",
         "ket":"-",
         "alamat":"-",
-        "nomor_tps":1,
+        "nomor_tps":0,
         "kelurahan_desa":"KELURAHAN",
         "kecamatan":"KECAMATAN",
         "kabupaten_kota":"KABUPATEN",

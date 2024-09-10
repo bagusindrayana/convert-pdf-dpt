@@ -2,6 +2,7 @@ import csv
 from collections import defaultdict
 import glob
 import pandas as pd
+import sys
 
 # Fungsi untuk membaca setiap CSV dan menggabungkan datanya
 def buat_report(direktori_csv):
@@ -16,6 +17,8 @@ def buat_report(direktori_csv):
             reader = csv.DictReader(file)
             for row in reader:
                 if row['kecamatan'] == "KECAMATAN" and row['kelurahan_desa'] == "KELURAHAN":
+                    continue
+                if row['nomor_tps'] == "0" or row['nomor_tps'] == 0 or row['nomor_tps'] == "":
                     continue
                 provinsi = row['provinsi']
                 kabupaten = row['kabupaten_kota']
@@ -93,6 +96,13 @@ direktori_csv = './results/all'
 
 # Path output untuk file Excel
 output_excel = './results/list_tps_per_rt_rw.xlsx'
+
+# get arguments from command line, --dir and --output
+for i in range(1,len(sys.argv)):
+    if sys.argv[i] == "--dir":
+        direktori_csv = sys.argv[i+1]
+    if sys.argv[i] == "--output":
+        output_excel = sys.argv[i+1]
 
 # Membuat report dari semua CSV di dalam direktori
 data = buat_report(direktori_csv)
