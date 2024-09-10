@@ -239,7 +239,7 @@ def extractData(path,no,dpt):
                         newDPT['nama'] = data["nama"]
                         newDPT['jenis_kelamin'] = data["jenis_kelamin"]
                         newDPT['usia'] = data["usia"]
-                        newDPT['alamat'] = data["alamat"]
+                        newDPT['alamat'] = str(data["alamat"]).strip()
                         newDPT['rw'] = data["rw"]
                         newDPT['rt'] = data["rt"]
                         newDPT['ket'] = data["ket"]

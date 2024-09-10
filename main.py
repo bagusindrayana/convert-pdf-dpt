@@ -43,7 +43,7 @@ def saveToCsv(results, fileName,parent):
         os.makedirs(resultsDir+'/'+parent+'/excel')
     csvFileName = resultsDir+'/'+parent+'/csv/'+fileName+'.csv'
     with open(csvFileName, 'w', newline='') as csvfile:
-        fieldnames = ['no', 'nama', 'jenis_kelamin', 'usia', 'rt', 'rw', 'nik', 'ket', 'nomor_tps', 'kelurahan_desa', 'kecamatan', 'kabupaten_kota', 'provinsi']
+        fieldnames = ['no', 'nama', 'jenis_kelamin', 'usia', 'rt', 'rw', 'nik', 'ket','alamat', 'nomor_tps', 'kelurahan_desa', 'kecamatan', 'kabupaten_kota', 'provinsi']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for result in results:
@@ -188,12 +188,13 @@ def extractData(path,no,dpt):
                                     newDPT["rw"] = str(row[8])
                             except Exception:
                                 if len(row) > 4 and len(str(row[4]).strip()) > 8:
-                                    newDPT["ket"] = row[4]
+                                    newDPT["alamat"] = row[4]
+                                    print(row[4])
                                     splitRtRw = row[4].split("\n")
                                     # get last and second last
                                     if len(splitRtRw) > 2:
-                                        newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
-                                        newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                                        newDPT["rt"] = str(splitRtRw[len(splitRtRw)-2])
+                                        newDPT["rw"] = str(splitRtRw[len(splitRtRw)-1])
                                     elif len(splitRtRw) == 2:
                                         newDPT["rt"] = str(splitRtRw[0])
                                         newDPT["rw"] = str(splitRtRw[1])
@@ -218,17 +219,20 @@ def extractData(path,no,dpt):
                                     newDPT["rw"] = str(splitRtRw[1])
                             elif len(str(row[6])) > 8:
                                 print(row[6])
+                                newDPT["alamat"] = row[6]
                                 if row[6][-3:].isdigit():
                                     # get the last 3 digit
                                     newDPT["rt"] = str(row[6][-3:])
                                 newDPT["rw"] = str(row[7])
                             elif len(str(row[5])) > 8:
                                 print(row[5])
+                                newDPT["alamat"] = row[5]
                                 splitRow = row[5].split(" ")
                                 if len(splitRow) > 1 and str(splitRow[len(splitRow)-2]).strip().replace(".","")[0].isdigit() and str(splitRow[len(splitRow)-1]).strip().replace(".","")[0].isdigit():
                                     newDPT["rt"] = str(splitRow[0])
                                     newDPT["rw"] = str(splitRow[1])
                             elif len(str(row[4])) > 8:
+                                newDPT["alamat"] = row[4]
                                 print(row[4])
                                 if row[4][-3:].isdigit():
                                     # get the last 3 digit
@@ -315,6 +319,7 @@ for folderProvinsi in folderList:
         "rw":"",
         "nik":"-",
         "ket":"-",
+        "alamat":"-",
         "nomor_tps":1,
         "kelurahan_desa":"KELURAHAN",
         "kecamatan":"KECAMATAN",
