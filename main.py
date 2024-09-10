@@ -7,27 +7,41 @@ import pdfquery
 import shutil
 
 
-pdfSourceDir = './pdf-sources'
+pdfSourceDir = './results/fix-errors/pdf-sources'
+resultsDir = './results/fix-errors/results'
+deleteOriginal = False
+
+# get arguments from --source --results --deleteOriginal
+for i in range(1,len(sys.argv)):
+    if sys.argv[i] == "--source":
+        pdfSourceDir = sys.argv[i+1]
+    if sys.argv[i] == "--results":
+        resultsDir = sys.argv[i+1]
+    if sys.argv[i] == "--deleteOriginal":
+        deleteOriginal = str(sys.argv[i+1]).lower() == "true"
+
+
+
 # check if folder not exist
 if not os.path.exists(pdfSourceDir):
     os.makedirs(pdfSourceDir)
 
 def saveToCsv(results, fileName,parent):
-    if not os.path.exists('./results'):
-        os.makedirs('./results')
+    if not os.path.exists(resultsDir):
+        os.makedirs(resultsDir)
     # if parent contains / then create folder
     folderList = parent.split("/")
     parent = ""
     for folder in folderList:
         parent += folder+"/"
-        if not os.path.exists('./results/'+parent):
-            os.makedirs('./results/'+parent)
+        if not os.path.exists(resultsDir+'/'+parent):
+            os.makedirs(resultsDir+'/'+parent)
     
-    if not os.path.exists('./results/'+parent+'/csv'):
-        os.makedirs('./results/'+parent+'/csv')
-    if not os.path.exists('./results/'+parent+'/excel'):
-        os.makedirs('./results/'+parent+'/excel')
-    csvFileName = './results/'+parent+'/csv/'+fileName+'.csv'
+    if not os.path.exists(resultsDir+'/'+parent+'/csv'):
+        os.makedirs(resultsDir+'/'+parent+'/csv')
+    if not os.path.exists(resultsDir+'/'+parent+'/excel'):
+        os.makedirs(resultsDir+'/'+parent+'/excel')
+    csvFileName = resultsDir+'/'+parent+'/csv/'+fileName+'.csv'
     with open(csvFileName, 'w', newline='') as csvfile:
         fieldnames = ['no', 'nama', 'jenis_kelamin', 'usia', 'rt', 'rw', 'nik', 'ket', 'nomor_tps', 'kelurahan_desa', 'kecamatan', 'kabupaten_kota', 'provinsi']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -35,7 +49,7 @@ def saveToCsv(results, fileName,parent):
         for result in results:
             writer.writerow(result)
     csvFile = pd.read_csv(csvFileName, encoding='cp1252')
-    xlsxFileName = './results/'+parent+'/excel/'+fileName+'.xlsx'
+    xlsxFileName = resultsDir+'/'+parent+'/excel/'+fileName+'.xlsx'
     csvFile.to_excel(xlsxFileName, index=None, header=True)
 
 def createTxtLog(path,fileName,log):
@@ -109,9 +123,11 @@ def extractData(path,no,dpt):
                 continue
             df = table.df.reset_index()  # make sure indexes pair with number of rows
             ok = False
+            oldRT = ""
+            oldRW = ""
             for index, row in df.iterrows():
                 ok = False
-                if row[1].strip() != "2" and row[1].strip() != "" and row[1].strip() != "NAMA" and row[1].strip() != "KABUPATEN/KOTA"  and row[1].strip() != 2 and row[2].strip() != "JENIS" and row[3].strip() != "JENIS" and row[3].strip() != "":
+                if row[1].strip() != "2" and row[1].strip() != "" and "NAMA" not in str(row[1]).strip() and "USIA" not in str(row[1]).strip() and row[1].strip() != "KABUPATEN/KOTA"  and row[1].strip() != 2 and row[2].strip() != "JENIS" and row[3].strip() != "JENIS" and row[3].strip() != "":
                     newDPT = dpt.copy()
                     newDPT["no"] = no
                     newDPT["nama"] = row[1].replace("/"," atau ").strip()
@@ -171,27 +187,66 @@ def extractData(path,no,dpt):
                                     newDPT["rt"] = str(row[7])
                                     newDPT["rw"] = str(row[8])
                             except Exception:
-                                if len(row) > 4:
+                                if len(row) > 4 and len(str(row[4]).strip()) > 8:
                                     newDPT["ket"] = row[4]
                                     splitRtRw = row[4].split("\n")
                                     # get last and second last
                                     if len(splitRtRw) > 2:
                                         newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
                                         newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                                    elif len(splitRtRw) == 2:
+                                        newDPT["rt"] = str(splitRtRw[0])
+                                        newDPT["rw"] = str(splitRtRw[1])
                                     
-                        
+   
                     except Exception as e:
-                        print(e,filename)
+                        print(filename,row)
+                        print(filename,filename)
                         print(traceback.format_exc())
                         # or
                         print(sys.exc_info()[2])
                         haveError = True
-                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
+                        createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
                     if newDPT['rt'] == "" and newDPT['rw'] == "":
-                        print("Data RT RW not found ",row)
-                        haveError = True
-                        ok = False
-                        createTxtLog("./results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                        if len(row) > 4:
+                            print(row[4],len(str(row[4])))
+                            if len(str(row[4])) == 7:
+                                newDPT["ket"] = row[3]
+                                splitRtRw = row[4].split("\n")
+                                if len(splitRtRw) > 1:
+                                    newDPT["rt"] = str(splitRtRw[0])
+                                    newDPT["rw"] = str(splitRtRw[1])
+                            elif len(str(row[6])) > 8:
+                                print(row[6])
+                                if row[6][-3:].isdigit():
+                                    # get the last 3 digit
+                                    newDPT["rt"] = str(row[6][-3:])
+                                newDPT["rw"] = str(row[7])
+                            elif len(str(row[5])) > 8:
+                                print(row[5])
+                                splitRow = row[5].split(" ")
+                                if len(splitRow) > 1 and str(splitRow[len(splitRow)-2]).strip().replace(".","")[0].isdigit() and str(splitRow[len(splitRow)-1]).strip().replace(".","")[0].isdigit():
+                                    newDPT["rt"] = str(splitRow[0])
+                                    newDPT["rw"] = str(splitRow[1])
+                            elif len(str(row[4])) > 8:
+                                print(row[4])
+                                if row[4][-3:].isdigit():
+                                    # get the last 3 digit
+                                    newDPT["rt"] = str(row[4][-3:])
+                                    newDPT["rw"] = str(row[6])
+                        if newDPT['rt'] == "":
+                            newDPT["rt"] = oldRT
+                        if newDPT['rw'] == "":
+                            newDPT["rw"] = oldRW
+
+                        if newDPT['rt'] == "" and newDPT['rw'] == "":
+                            print("Data RT RW not found ",row)
+                            haveError = True
+                            ok = False
+                            createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                        else:
+                            oldRT = newDPT['rt']
+                            oldRW = newDPT['rw']
                 if ok:
                     if(checkDouble(newDPT,results)):
                         newDPT["ket"] =  str(newDPT["ket"])+str(no)
@@ -203,23 +258,29 @@ def extractData(path,no,dpt):
         # or
         print(sys.exc_info()[2])
         # check if error folder not exist
-        if not os.path.exists('./results/'+dpt["provinsi"]):
-            os.makedirs('./results/'+dpt["provinsi"])
-        if not os.path.exists('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]):
-            os.makedirs('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"])
-        if not os.path.exists('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error"):
-            os.makedirs('./results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error")
+        if not os.path.exists(resultsDir+'/'+dpt["provinsi"]):
+            os.makedirs(resultsDir+'/'+dpt["provinsi"])
+        if not os.path.exists(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]):
+            os.makedirs(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"])
+        if not os.path.exists(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error"):
+            os.makedirs(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error")
         # copy file tp to error folder
         # os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
-        shutil.copy(path, './results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
+        shutil.copy(path, resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
 
     if haveError:
         # os.system("cp '"+path+"' './results/"+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename+"'")
-        shutil.copy(path, './results/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
+        shutil.copy(path, resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
 
     if len(results) > 0:
         print(len(results),filename)
         saveToCsv(results, str(firstNo) +"_"+str((no-1))+ "_"+ filename,dpt["provinsi"]+"/"+dpt["kabupaten_kota"])
+
+        if deleteOriginal and haveError == False:
+            print("Try Delete "+path)
+            if os.path.exists(path):
+                print("success Delete "+path)
+                os.remove(path)
     return {
         "no":no,
         "results":results,
@@ -229,9 +290,11 @@ def deepSearch(path,no,dpt):
     listFiles = os.listdir(path)
     for file in listFiles:
         if(os.path.isfile(path+"/"+file)):
-            print(file)
-            extraxted = extractData(path+"/"+file,no,dpt)
-            no = extraxted["no"]
+            # if file pdf
+            if file.endswith(".pdf"):
+                print(file)
+                extraxted = extractData(path+"/"+file,no,dpt)
+                no = extraxted["no"]
         else:
             no = deepSearch(path+"/"+file,no,dpt)
     return no
@@ -266,7 +329,7 @@ for folderProvinsi in folderList:
         kabupatenKota = folderKabKota.replace("SALINAN DPT","").replace("_"," ").strip()
         dpt["kabupaten_kota"] = kabupatenKota
         
-        no = deepSearch("./pdf-sources/"+folderProvinsi+"/"+folderKabKota,no,dpt)
+        no = deepSearch(pdfSourceDir+'/'+folderProvinsi+"/"+folderKabKota,no,dpt)
         print("Done "+kabupatenKota)
     print("Done "+folderProvinsi)
        
