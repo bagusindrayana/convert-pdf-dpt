@@ -281,14 +281,13 @@ def deepSearch(path,no,dpt):
     listFiles = os.listdir(path)
     for file in listFiles:
         if(os.path.isfile(path+"/"+file)):
-            print(file)
-            extraxted = extractData(path+"/"+file,no,dpt)
-
-            # sleep random from 1-4 to make sure the server not block the request
-            time.sleep(random.randint(1,4))
-    
-            no = extraxted["no"]
-        else:
+            if file.endswith(".pdf"):
+                print(file)
+                extraxted = extractData(path+"/"+file,no,dpt)
+                # sleep random from 1-4 to make sure the server not block the request
+                time.sleep(random.randint(1,4))
+                no = extraxted["no"]
+        elif os.path.isdir(path):
             no = deepSearch(path+"/"+file,no,dpt)
     return no
 
@@ -323,8 +322,8 @@ for folderProvinsi in folderList:
             # remove "SALINAN DPT"
             kabupatenKota = folderKabKota.replace("SALINAN DPT","").replace("_"," ").strip()
             dpt["kabupaten_kota"] = kabupatenKota
-            
-            no = deepSearch(pdfSourceDir+"/"+folderProvinsi+"/"+folderKabKota,no,dpt)
-            print("Done "+kabupatenKota)
+            if os.path.isdir(pdfSourceDir+"/"+folderProvinsi+"/"+folderKabKota):
+                no = deepSearch(pdfSourceDir+"/"+folderProvinsi+"/"+folderKabKota,no,dpt)
+                print("Done "+kabupatenKota)
         print("Done "+folderProvinsi)
 
