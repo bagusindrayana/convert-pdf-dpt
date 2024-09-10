@@ -60,6 +60,12 @@ def download_excel(download_info):
     urlretrieve(download_info['url_download'], download_info['download_path']+"/"+download_info['file_name'])
     return download_info['download_path']+"/"+download_info['file_name']
 
+def padding_zero(no,length):
+    noStr = str(no)
+    while len(noStr) < length:
+        noStr = "0"+noStr
+    return noStr
+
 def createTxtLog(path,fileName,log):
     folderList = path.split("/")
     parent = ""
@@ -220,13 +226,13 @@ def extractData(path,no,dpt):
                     if cels[0] != None and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
                         data['no'] = no
                         data['nama'] = cels[1]
-                        data['jenis_kelamin'] = cels[2]
-                        data['usia'] = cels[3]
-                        data['alamat'] = cels[4]
-                        data['rt'] = cels[5]
-                        data['rw'] = cels[6]
-                        data['ket'] = cels[7]
-                    elif cels[len(row)-2] != None and cels[len(row)-2] != None and "KECAMATAN" in str(cels[len(row)-2]) and "KELURAHAN TPS" in str(cels[len(row)-2]):
+                        data['jenis_kelamin'] = cels[3]
+                        data['usia'] = cels[4]
+                        data['alamat'] = cels[5]
+                        data['rt'] = cels[7]
+                        data['rw'] = cels[8]
+                        data['ket'] = cels[9]
+                    elif cels[len(row)-3] != None and "KECAMATAN" in str(cels[len(row)-6]) and "KELURAHAN TPS" in str(cels[len(row)-6]):
                         valueSplit = str(cels[len(row)-1]).strip().split(":")
                         dpt["nomor_tps"] = valueSplit[3]
                         dpt['kelurahan_desa'] = valueSplit[2].strip()
@@ -240,9 +246,9 @@ def extractData(path,no,dpt):
                         newDPT['jenis_kelamin'] = data["jenis_kelamin"]
                         newDPT['usia'] = data["usia"]
                         newDPT['alamat'] = str(data["alamat"]).strip()
-                        newDPT['rw'] = data["rw"]
-                        newDPT['rt'] = data["rt"]
-                        newDPT['ket'] = data["ket"]
+                        newDPT['rt'] =  padding_zero(data["rt"],3)
+                        newDPT['rw'] = padding_zero(data["rw"],3)
+                        newDPT['ket'] =  data["ket"]
                         results.append(newDPT)
                         no += 1
 
