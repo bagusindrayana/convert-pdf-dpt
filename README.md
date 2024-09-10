@@ -20,7 +20,7 @@
   - `--deleteOriginal` false/true (jika ingin menghapus file pdf dari source jika berhasil convert)
   - contoh : `python main.py --source ./pdf-resources --results ./results --deleteOriginal true`
 
-- disarankan menggunakan `--deleteOriginal true` agak yang pdf berhasil di convert terhapus dan kemudian bisa di convert ulang dengan `main_ilovepdf.py` jika ada file yang gagal, dan tambahkan `--source` per kota agar tidak memakan waktu yang lama
+- disarankan menggunakan `--deleteOriginal true` agar yang pdf berhasil di convert terhapus dan kemudian bisa di convert ulang dengan `main_ilovepdf.py` jika ada file yang gagal, dan tambahkan `--source` per kota agar tidak memakan waktu yang lama
 - contoh : `python .\main.py --source ./pdf-sources/convert-samarinda --results ./results/convert-samarinda --deleteOrigin true`
 
 ## Gagal Convert
