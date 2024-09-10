@@ -21,7 +21,7 @@
   - contoh : `python main.py --source ./pdf-resources --results ./results --deleteOriginal true`
 
 - disarankan menggunakan `--deleteOriginal true` agar yang pdf berhasil di convert terhapus dan kemudian bisa di convert ulang dengan `main_ilovepdf.py` jika ada file yang gagal, dan tambahkan `--source` per kota agar tidak memakan waktu yang lama
-- contoh : `python .\main.py --source ./pdf-sources/convert-samarinda --results ./results/convert-samarinda --deleteOrigin true`
+- contoh : `python .\main.py --source ./pdf-sources/convert-samarinda --results ./results/convert-samarinda --deleteOrigin true` dengan struktur direktori tetap sama `PROVINSI/KABUPATEN-KOTA` jadi seperti `./pdf-sources/convert-samarinda/KALIMANTAN TIMUR/SAMARINDA`
 
 ## Gagal Convert
 - jika ada file yang gagal convert, maka file yang gagal akan di copy ke folder `results/PROVINSI/NAMA KABUPATEN KOTA/error`
