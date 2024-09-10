@@ -24,7 +24,7 @@
 - contoh : `python .\main.py --source ./pdf-sources/convert-samarinda --results ./results/convert-samarinda --deleteOrigin true`
 
 ## Gagal Convert
-- jika ada file yang gagal convert, maka file yang gagal akan di copy ke folder `results/error-NAMA KABUPATEN/`
+- jika ada file yang gagal convert, maka file yang gagal akan di copy ke folder `results/PROVINSI/NAMA KABUPATEN KOTA/error`
 - versi `main.py` kadang tidak bisa mendapatkan kolom RT/RW, sedangkan versi `main_ilovepdf.py` akurat tapi bisa kena timeout dari ilovepdf
 
 ## Report
