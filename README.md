@@ -29,3 +29,9 @@
 
 ## Report
 - untuk membuat laporan per kota, jalankan `python report.py --dir ./results/PROVINSI/KOTA/FOLDER-CSV --output ./results/nama_laporan.xlsx`
+
+## Tips
+- untuk mempercepat proses convert pada jumlah data yang banyak kita bisa membaginya lebih dari 1 dan menjalankan scriptnya secara bersamaan, contoh terdapat 1000 data dari kota samarainda, kita bisa membaginya menjadi 2 folder dengan masing-masing 500 data, dan menjalankan scriptnya secara bersamaan
+  - `python main.py --source ./pdf-resources/samarinda-part-1 --results ./results --deleteOriginal true` (jalankan di terminal 1)
+  - `python main.py --source ./pdf-resources/samarinda-part-2 --results ./results --deleteOriginal true` (jalankan di terminal 1)
+- dimana `samarinda-part-1` dan `samarinda-part-2` tetap memiliki struktur folder `samarinda-part-*/KALIMANTAN TIMUR/SAMARINDA` seperti biasa namun dengan direktori `--result` yang sama

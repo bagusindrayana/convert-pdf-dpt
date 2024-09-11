@@ -241,87 +241,107 @@ def extractData(path,no,dpt):
                 #     nomor_tps = valueSplit[3]
                 #     dpt['kelurahan_desa'] = valueSplit[2].strip()
                 #     dpt['kecamatan'] = valueSplit[1].strip()
-                if len(cels) >= 11:
-                    if notNone([
-                        cels[0],
-                        cels[1],
-                        cels[3],
-                        cels[4],
-                        cels[5],
-                        cels[7],
-                        cels[8],
-                    ]) and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
-                        
-                        data['no'] = no
-                        data['nama'] = cels[1]
-                        data['jenis_kelamin'] = cels[3]
-                        data['usia'] = cels[4]
-                        data['alamat'] = cels[5]
-                        data['rt'] = cels[7]
-                        data['rw'] = cels[8]
-                        if cels[9] != None:
-                            data['ket'] = cels[9]
-                    elif notNone([
-                        cels[0],
-                        cels[1],
-                        cels[4],
-                        cels[5],
-                        cels[6],
-                        cels[7],
-                        cels[8],
-                    ]) and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
-                        
-                        data['no'] = no
-                        data['nama'] = cels[1]
-                        data['jenis_kelamin'] = cels[4]
-                        data['usia'] = cels[5]
-                        data['alamat'] = cels[6]
-                        data['rt'] = cels[7]
-                        data['rw'] = cels[8]
-                        if cels[9] != None:
-                            data['ket'] = cels[9]
-                    elif notNone([
-                        cels[0],
-                        cels[1],
-                        cels[4],
-                        cels[5],
-                        cels[6],
-                        cels[8],
-                        cels[9],
-                    ]) and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
-                        
-                        data['no'] = no
-                        data['nama'] = cels[1]
-                        data['jenis_kelamin'] = cels[4]
-                        data['usia'] = cels[5]
-                        data['alamat'] = cels[6]
-                        data['rt'] = cels[8]
-                        data['rw'] = cels[9]
-                        if cels[10] != None:
-                            data['ket'] = cels[10]
-                           
-                elif len(cels) >= 9:
-                    if notNone([
-                        cels[0],
-                        cels[1],
-                        cels[2],
-                        cels[3],
-                        cels[4],
-                        cels[5],
-                        cels[6],
-                    ]) and str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]): 
-                        data['no'] = no
-                        data['nama'] = cels[1]
-                        data['jenis_kelamin'] = cels[2]
-                        data['usia'] = cels[3]
-                        data['alamat'] = cels[4]
-                        data['rt'] = cels[5]
-                        data['rw'] = cels[6]
-                        if cels[7] != None:
-                            data['ket'] = cels[7]
+                if str(cels[0]) != "NO" and str(cels[0]) != "1" and str(cels[1]) != "NAMA" and str(cels[1]) != "2" and "PROVINSI" not in str(cels[0]) and "DAFTAR PEMILIH" not in str(cels[0]) and "Rekapitulasi" not in str(cels[0]):
+                    if len(cels) >= 11:
+                        if notNone([
+                            cels[0],
+                            cels[1],
+                            cels[3],
+                            cels[4],
+                            cels[5],
+                            cels[7],
+                            cels[8],
+                        ]): 
                             
-                elif len(cels) >= 7:
-                    print(cels)
+                            data['no'] = no
+                            data['nama'] = cels[1]
+                            data['jenis_kelamin'] = cels[3]
+                            data['usia'] = cels[4]
+                            data['alamat'] = cels[5]
+                            data['rt'] = cels[7]
+                            data['rw'] = cels[8]
+                            if cels[9] != None:
+                                data['ket'] = cels[9]
+                        elif notNone([
+                            cels[0],
+                            cels[1],
+                            cels[4],
+                            cels[5],
+                            cels[6],
+                            cels[7],
+                            cels[8],
+                        ]): 
+                            
+                            data['no'] = no
+                            data['nama'] = cels[1]
+                            data['jenis_kelamin'] = cels[4]
+                            data['usia'] = cels[5]
+                            data['alamat'] = cels[6]
+                            data['rt'] = cels[7]
+                            data['rw'] = cels[8]
+                            if cels[9] != None:
+                                data['ket'] = cels[9]
+                        elif notNone([
+                            cels[0],
+                            cels[1],
+                            cels[3],
+                            cels[5],
+                            cels[6],
+                            cels[7],
+                            cels[8],
+                        ]): 
+                            
+                            data['no'] = no
+                            data['nama'] = cels[1]
+                            data['jenis_kelamin'] = cels[3]
+                            data['usia'] = cels[5]
+                            data['alamat'] = cels[6]
+                            data['rt'] = cels[7]
+                            data['rw'] = cels[8]
+                            if cels[10] != None:
+                                data['ket'] = cels[10]
+                        elif notNone([
+                            cels[0],
+                            cels[1],
+                            cels[4],
+                            cels[5],
+                            cels[6],
+                            cels[8],
+                            cels[9],
+                        ]): 
+                            
+                            data['no'] = no
+                            data['nama'] = cels[1]
+                            data['jenis_kelamin'] = cels[4]
+                            data['usia'] = cels[5]
+                            data['alamat'] = cels[6]
+                            data['rt'] = cels[8]
+                            data['rw'] = cels[9]
+                            if cels[10] != None:
+                                data['ket'] = cels[10]
+                            
+                    elif len(cels) >= 9:
+                        if notNone([
+                            cels[0],
+                            cels[1],
+                            cels[2],
+                            cels[3],
+                            cels[4],
+                            cels[5],
+                            cels[6],
+                        ]): 
+                            data['no'] = no
+                            data['nama'] = cels[1]
+                            data['jenis_kelamin'] = cels[2]
+                            data['usia'] = cels[3]
+                            data['alamat'] = cels[4]
+                            data['rt'] = cels[5]
+                            data['rw'] = cels[6]
+                            if cels[7] != None:
+                                data['ket'] = cels[7]
+                                
+                    elif len(cels) >= 7:
+                        print(cels)
 
                 if data['nama'] != None and data['nama'] != "":
                     newDPT = dpt.copy()
