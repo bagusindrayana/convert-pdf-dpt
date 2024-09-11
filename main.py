@@ -136,11 +136,11 @@ def extractData(path,no,dpt):
                 if row[1].strip() != "2" and row[1].strip() != "" and "NAMA" not in str(row[1]).strip() and "USIA" not in str(row[1]).strip() and row[1].strip() != "KABUPATEN/KOTA"  and row[1].strip() != 2 and row[2].strip() != "JENIS" and row[3].strip() != "JENIS" and row[3].strip() != "":
                     newDPT = dpt.copy()
                     newDPT["no"] = no
-                    newDPT["nama"] = row[1].replace("/"," atau ").strip()
-                    if row[2].strip() == "L" or row[2].strip() == "P":
-                        newDPT["jenis_kelamin"] = row[2]
-                    if len(str(row[3])) == 2:
-                        newDPT["usia"] = row[3]
+                    # newDPT["nama"] = row[1].replace("/"," atau ").strip()
+                    # if row[2].strip() == "L" or row[2].strip() == "P":
+                    #     newDPT["jenis_kelamin"] = row[2]
+                    # if len(str(row[3])) == 2:
+                    #     newDPT["usia"] = row[3]
                     ok = True
                     try:
                         if row[1].strip().find("\nL") != -1 or row[1].strip().find("\nP") != -1:
@@ -155,7 +155,16 @@ def extractData(path,no,dpt):
                                 if len(splitRtRw) > 2:
                                     newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
                                     newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
+                        elif len(str(row[0]).split("\n")) > 1 and (row[1] == "L" or row[1] == "P") and len(str(row[4])) == 3 and len(str(row[5])) == 3:
+                            splitRow0 = row[0].split("\n")
+                            newDPT["nama"] = splitRow0[0].strip()
+                            newDPT["jenis_kelamin"] = row[1]
+                            newDPT["usia"] = row[2]
+                            newDPT["alamat"] = row[3]
+                            newDPT["rt"] = str(row[4])
+                            newDPT["rw"] = str(row[5])
                         else:
+                            newDPT["nama"] = row[1].replace("/"," atau ").strip()
                             newDPT["jenis_kelamin"] = row[2]
                             newDPT["usia"] = row[3]
                             if len(str(row[5])) == 3:
@@ -205,6 +214,8 @@ def extractData(path,no,dpt):
                         newDPT["ket"] =  str(newDPT["ket"])+str(no)
                     results.append(newDPT)
                     no += 1
+                
+
     except Exception as e:
         print(e,filename)
         print(traceback.format_exc())
@@ -237,6 +248,9 @@ def extractData(path,no,dpt):
                     os.remove(path)
                 except Exception as e:
                     print(e)
+    else:
+        print("No data found in "+filename)
+        shutil.copy(path, resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error/"+filename)
     return {
         "no":no,
         "results":results,
