@@ -7,8 +7,8 @@ import pdfquery
 import shutil
 
 
-pdfSourceDir = './results/fix-errors/pdf-sources'
-resultsDir = './results/fix-errors/results'
+pdfSourceDir = './pdf-sources'
+resultsDir = './results'
 deleteOriginal = False
 
 # get arguments from --source --results --deleteOriginal
