@@ -155,56 +155,18 @@ def extractData(path,no,dpt):
                                 if len(splitRtRw) > 2:
                                     newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
                                     newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
-                                
-                        elif row[3].strip() == "L" or row[3].strip() == "P":
-                            newDPT["jenis_kelamin"] = row[3]
-                            newDPT["usia"] = row[4]
-
-                            try:
-                                if len(str(row[5])) == 3:
-                                    newDPT["rt"] = str(row[5])
-                                    newDPT["rw"] = str(row[6])
-                                elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
-                                    newDPT["rt"] = str(row[6])
-                                    newDPT["rw"] = str(row[7])
-                                elif len(str(row[8])) == 3:
-                                    newDPT["rt"] = str(row[7])
-                                    newDPT["rw"] = str(row[8])
-                            except Exception:
-                                if len(row) > 5:
-                                    newDPT["ket"] = row[5]
-                                    splitRtRw = row[5].split("\n")
-                                    # get last and second last
-                                    if len(splitRtRw) > 2:
-                                        newDPT["rt"] = str(splitRtRw[len(splitRtRw)-1])
-                                        newDPT["rw"] = str(splitRtRw[len(splitRtRw)-2])
-                                    
                         else:
                             newDPT["jenis_kelamin"] = row[2]
                             newDPT["usia"] = row[3]
-                            try:
-                                if len(str(row[5])) == 3:
-                                    newDPT["rt"] = str(row[5])
-                                    newDPT["rw"] = str(row[6])
-                                elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
-                                    newDPT["rt"] = str(row[6])
-                                    newDPT["rw"] = str(row[7])
-                                elif len(str(row[8])) == 3:
-                                    newDPT["rt"] = str(row[7])
-                                    newDPT["rw"] = str(row[8])
-                            except Exception:
-                                if len(row) > 4 and len(str(row[4]).strip()) > 8:
-                                    newDPT["alamat"] = row[4]
-                                    print(row[4])
-                                    print("RT : "+newDPT["rt"],"RW : "+newDPT["rw"])
-                                    splitRtRw = row[4].split("\n")
-                                    # get last and second last
-                                    if len(splitRtRw) > 2:
-                                        newDPT["rt"] = str(splitRtRw[len(splitRtRw)-2])
-                                        newDPT["rw"] = str(splitRtRw[len(splitRtRw)-1])
-                                    elif len(splitRtRw) == 2:
-                                        newDPT["rt"] = str(splitRtRw[0])
-                                        newDPT["rw"] = str(splitRtRw[1])
+                            if len(str(row[5])) == 3:
+                                newDPT["rt"] = str(row[5])
+                                newDPT["rw"] = str(row[6])
+                            elif len(str(row[6])) == 3 and len(str(row[7])) == 3:
+                                newDPT["rt"] = str(row[6])
+                                newDPT["rw"] = str(row[7])
+                            elif len(str(row[8])) == 3:
+                                newDPT["rt"] = str(row[7])
+                                newDPT["rw"] = str(row[8])
                                     
                                     
    
@@ -217,43 +179,15 @@ def extractData(path,no,dpt):
                         haveError = True
                         ok = False
                         createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"data DPT gagal di ekstrak : "+str(row[0])+","+str(row[1]))
-                    # if newDPT['rt'] == "" and newDPT['rw'] == "":
-                    #     if len(row) > 4:
-                    #         print(row[4],len(str(row[4])))
-                    #         if len(str(row[4])) == 7:
-                    #             newDPT["ket"] = row[3]
-                    #             splitRtRw = row[4].split("\n")
-                    #             if len(splitRtRw) > 1:
-                    #                 newDPT["rt"] = str(splitRtRw[0])
-                    #                 newDPT["rw"] = str(splitRtRw[1])
-                    #         elif len(str(row[6])) > 8:
-                    #             print(1,row[6])
-                    #             newDPT["alamat"] = row[6]
-                    #             if row[6][-3:].isdigit():
-                    #                 # get the last 3 digit
-                    #                 newDPT["rt"] = str(row[6][-3:])
-                    #             newDPT["rw"] = str(row[7])
-                    #         elif len(str(row[5])) > 8:
-                    #             print(2,row[5])
-                    #             newDPT["alamat"] = row[5]
-                    #             splitRow = row[5].split(" ")
-                    #             if len(splitRow) > 1 and str(splitRow[len(splitRow)-2]).strip().replace(".","")[0].isdigit() and str(splitRow[len(splitRow)-1]).strip().replace(".","")[0].isdigit():
-                    #                 newDPT["rt"] = str(splitRow[0])
-                    #                 newDPT["rw"] = str(splitRow[1])
-                    #         elif len(str(row[4])) > 8:
-                    #             newDPT["alamat"] = row[4]
-                    #             print(3,row[4])
-                    #             if row[4][-3:].isdigit():
-                    #                 # get the last 3 digit
-                    #                 newDPT["rt"] = str(row[4][-3:])
-                    #                 newDPT["rw"] = str(row[6])
-                    #     if newDPT['rt'] == "":
-                    #         newDPT["rt"] = oldRT
-                    #     if newDPT['rw'] == "":
-                    #         newDPT["rw"] = oldRW
-
+                   
                     if newDPT['rt'] == "" or newDPT['rw'] == "":
                         print("Data RT RW not found ",row)
+                        haveError = True
+                        ok = False
+                        createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
+                    
+                    if len(newDPT['rt']) > 3 or len(newDPT['rw']) > 3:
+                        print("Data RT RW inccorect ",row)
                         haveError = True
                         ok = False
                         createTxtLog(resultsDir+'/'+dpt["provinsi"]+"/"+dpt["kabupaten_kota"]+"/error",str(newDPT["nama"])+"_"+filename,"Data RT RW not found : "+str(row[0])+","+str(row[1]))
